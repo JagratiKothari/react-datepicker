@@ -428,8 +428,14 @@
     }
   }
 
+  &--holiday {
+    background-color: coral;
+    border-radius: $datepicker__border-radius;
+    color: #fff;
+  }
+
   &--selected,
-  &--in-selecting-range,
+  &--holiday + &--selected &--in-selecting-range,
   &--in-range {
     border-radius: $datepicker__border-radius;
     background-color: $datepicker__selected-color;

@@ -54,7 +54,7 @@ const DROPDOWN_FOCUS_CLASSNAMES = [
 const isDropdownSelect = (element = {}) => {
   const classNames = (element.className || "").split(/\s+/);
   return DROPDOWN_FOCUS_CLASSNAMES.some(
-    (testClassname) => classNames.indexOf(testClassname) >= 0
+    (testClassname) => classNames.indexOf(testClassname) >= 0,
   );
 };
 
@@ -98,18 +98,26 @@ export default class Calendar extends React.Component {
       PropTypes.shape({
         start: PropTypes.instanceOf(Date),
         end: PropTypes.instanceOf(Date),
-      })
+      }),
     ),
     filterDate: PropTypes.func,
     fixedHeight: PropTypes.bool,
     formatWeekNumber: PropTypes.func,
     highlightDates: PropTypes.instanceOf(Map),
+    holidays: PropTypes.arrayOf(
+      PropTypes.shape({
+        day: PropTypes.number,
+        month: PropTypes.number,
+        year: PropTypes.number,
+        name: PropTypes.string,
+      }),
+    ),
     includeDates: PropTypes.array,
     includeDateIntervals: PropTypes.arrayOf(
       PropTypes.shape({
         start: PropTypes.instanceOf(Date),
         end: PropTypes.instanceOf(Date),
-      })
+      }),
     ),
     includeTimes: PropTypes.array,
     injectTimes: PropTypes.array,
@@ -241,13 +249,13 @@ export default class Calendar extends React.Component {
     ) {
       const hasMonthChanged = !isSameMonth(
         this.state.date,
-        this.props.preSelection
+        this.props.preSelection,
       );
       this.setState(
         {
           date: this.props.preSelection,
         },
-        () => hasMonthChanged && this.handleCustomMonthChange(this.state.date)
+        () => hasMonthChanged && this.handleCustomMonthChange(this.state.date),
       );
     } else if (
       this.props.openToDate &&
@@ -296,7 +304,7 @@ export default class Calendar extends React.Component {
       ({ date }) => ({
         date: addMonths(date, 1),
       }),
-      () => this.handleMonthChange(this.state.date)
+      () => this.handleMonthChange(this.state.date),
     );
   };
 
@@ -305,7 +313,7 @@ export default class Calendar extends React.Component {
       ({ date }) => ({
         date: subMonths(date, 1),
       }),
-      () => this.handleMonthChange(this.state.date)
+      () => this.handleMonthChange(this.state.date),
     );
   };
 
@@ -381,7 +389,7 @@ export default class Calendar extends React.Component {
       ({ date }) => ({
         date: setYear(date, year),
       }),
-      () => this.handleYearChange(this.state.date)
+      () => this.handleYearChange(this.state.date),
     );
   };
 
@@ -390,7 +398,7 @@ export default class Calendar extends React.Component {
       ({ date }) => ({
         date: setMonth(date, month),
       }),
-      () => this.handleMonthChange(this.state.date)
+      () => this.handleMonthChange(this.state.date),
     );
   };
 
@@ -399,7 +407,7 @@ export default class Calendar extends React.Component {
       ({ date }) => ({
         date: setYear(setMonth(date, getMonth(monthYear)), getYear(monthYear)),
       }),
-      () => this.handleMonthYearChange(this.state.date)
+      () => this.handleMonthYearChange(this.state.date),
     );
   };
 
@@ -407,7 +415,7 @@ export default class Calendar extends React.Component {
     const startOfWeek = getStartOfWeek(
       date,
       this.props.locale,
-      this.props.calendarStartDay
+      this.props.calendarStartDay,
     );
 
     const dayNames = [];
@@ -415,7 +423,7 @@ export default class Calendar extends React.Component {
       dayNames.push(
         <div key="W" className="react-datepicker__day-name">
           {this.props.weekLabel || "#"}
-        </div>
+        </div>,
       );
     }
     return dayNames.concat(
@@ -432,13 +440,13 @@ export default class Calendar extends React.Component {
             key={offset}
             className={classnames(
               "react-datepicker__day-name",
-              weekDayClassName
+              weekDayClassName,
             )}
           >
             {weekDayName}
           </div>
         );
-      })
+      }),
     );
   };
 
@@ -456,10 +464,10 @@ export default class Calendar extends React.Component {
       ({ date }) => ({
         date: subYears(
           date,
-          this.props.showYearPicker ? this.props.yearItemNumber : 1
+          this.props.showYearPicker ? this.props.yearItemNumber : 1,
         ),
       }),
-      () => this.handleYearChange(this.state.date)
+      () => this.handleYearChange(this.state.date),
     );
   };
 
@@ -557,10 +565,10 @@ export default class Calendar extends React.Component {
       ({ date }) => ({
         date: addYears(
           date,
-          this.props.showYearPicker ? this.props.yearItemNumber : 1
+          this.props.showYearPicker ? this.props.yearItemNumber : 1,
         ),
       }),
-      () => this.handleYearChange(this.state.date)
+      () => this.handleYearChange(this.state.date),
     );
   };
 
@@ -780,22 +788,22 @@ export default class Calendar extends React.Component {
 
     const prevMonthButtonDisabled = monthDisabledBefore(
       this.state.date,
-      this.props
+      this.props,
     );
 
     const nextMonthButtonDisabled = monthDisabledAfter(
       this.state.date,
-      this.props
+      this.props,
     );
 
     const prevYearButtonDisabled = yearDisabledBefore(
       this.state.date,
-      this.props
+      this.props,
     );
 
     const nextYearButtonDisabled = yearDisabledAfter(
       this.state.date,
-      this.props
+      this.props,
     );
 
     const showDayNames =
@@ -904,6 +912,7 @@ export default class Calendar extends React.Component {
             excludeDates={this.props.excludeDates}
             excludeDateIntervals={this.props.excludeDateIntervals}
             highlightDates={this.props.highlightDates}
+            holidays={this.props.holidays}
             selectingDate={this.state.selectingDate}
             includeDates={this.props.includeDates}
             includeDateIntervals={this.props.includeDateIntervals}
@@ -944,7 +953,7 @@ export default class Calendar extends React.Component {
             monthShowsDuplicateDaysEnd={monthShowsDuplicateDaysEnd}
             monthShowsDuplicateDaysStart={monthShowsDuplicateDaysStart}
           />
-        </div>
+        </div>,
       );
     }
     return monthList;
@@ -1028,7 +1037,7 @@ export default class Calendar extends React.Component {
   renderAriaLiveRegion = () => {
     const { startPeriod, endPeriod } = getYearsPeriod(
       this.state.date,
-      this.props.yearItemNumber
+      this.props.yearItemNumber,
     );
     let ariaLiveMessage;
 
@@ -1042,7 +1051,7 @@ export default class Calendar extends React.Component {
     } else {
       ariaLiveMessage = `${getMonthInLocale(
         getMonth(this.state.date),
-        this.props.locale
+        this.props.locale,
       )} ${getYear(this.state.date)}`;
     }
 

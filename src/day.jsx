@@ -26,6 +26,14 @@ export default class Day extends React.Component {
     dayClassName: PropTypes.func,
     endDate: PropTypes.instanceOf(Date),
     highlightDates: PropTypes.instanceOf(Map),
+    holidays: PropTypes.arrayOf(
+      PropTypes.shape({
+        day: PropTypes.number,
+        month: PropTypes.number,
+        year: PropTypes.number,
+        name: PropTypes.string,
+      }),
+    ),
     inline: PropTypes.bool,
     shouldFocusDayInline: PropTypes.bool,
     month: PropTypes.number,
@@ -52,6 +60,14 @@ export default class Day extends React.Component {
       PropTypes.shape({ locale: PropTypes.object }),
     ]),
   };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      holidayName: "",
+    };
+  }
 
   componentDidMount() {
     this.handleFocusDay();
@@ -95,6 +111,22 @@ export default class Day extends React.Component {
   isDisabled = () => isDayDisabled(this.props.day, this.props);
 
   isExcluded = () => isDayExcluded(this.props.day, this.props);
+
+  getName = () => {
+    const { day, holidays } = this.props;
+    const holiday = holidays?.find(
+      (holiday) =>
+        day.getFullYear() == holiday.year &&
+        day.getMonth() == holiday.month - 1 &&
+        day.getDate() == holiday.day,
+    );
+
+    return holiday?.name || "";
+  };
+
+  isHoliday = () => {
+    return Boolean(this.getName());
+  };
 
   getHighLightedClass = () => {
     const { day, highlightDates } = this.props;
@@ -253,6 +285,7 @@ export default class Day extends React.Component {
         "react-datepicker__day--in-selecting-range": this.isInSelectingRange(),
         "react-datepicker__day--selecting-range-start":
           this.isSelectingRangeStart(),
+        "react-datepicker__day--holiday": this.isHoliday(),
         "react-datepicker__day--selecting-range-end":
           this.isSelectingRangeEnd(),
         "react-datepicker__day--today": this.isCurrentDay(),
@@ -260,7 +293,7 @@ export default class Day extends React.Component {
         "react-datepicker__day--outside-month":
           this.isAfterMonth() || this.isBeforeMonth(),
       },
-      this.getHighLightedClass("react-datepicker__day--highlighted")
+      this.getHighLightedClass("react-datepicker__day--highlighted"),
     );
   };
 
@@ -358,6 +391,7 @@ export default class Day extends React.Component {
       aria-disabled={this.isDisabled()}
       aria-current={this.isCurrentDay() ? "date" : undefined}
       aria-selected={this.isSelected() || this.isInRange()}
+      title={this.getName()}
     >
       {this.renderDayContents()}
     </div>
